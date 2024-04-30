@@ -1,23 +1,27 @@
 import { Box, Text, Select, VStack, Heading } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const ViewNotes = () => {
   const [notes, setNotes] = useState([]);
   const [tags, setTags] = useState(['tag1', 'tag2']); // Mock tags
 
   useEffect(() => {
-    const mockNotes = [
-      { id: 1, title: 'Note 1', content: 'Content of note 1', tags: ['tag1'] },
-      { id: 2, title: 'Note 2', content: 'Content of note 2', tags: ['tag2'] }
-    ];
-    setNotes(mockNotes);
+    const storedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+    const storedTags = JSON.parse(localStorage.getItem('tags')) || [];
+    setNotes(storedNotes);
+    setTags(storedTags);
   }, []);
 
   return (
     <Box p={4}>
       <VStack spacing={4} align="stretch">
         <Heading mb={4}>View Notes</Heading>
-        <Select placeholder="Filter by tag">
+        <Select placeholder="Filter by tag" onChange={(e) => {
+          const tag = e.target.value;
+          const storedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+          const filteredNotes = storedNotes.filter(note => note.tags.includes(tag));
+          setNotes(filteredNotes);
+        }}>
           {tags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
         </Select>
         {notes.length > 0 ? (
